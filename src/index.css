@@ -21,6 +21,7 @@ ul {
 .square {
   background: #fff;
   border: 1px solid #999;
+  border-width: 1px;
   float: left;
   font-size: 24px;
   font-weight: bold;
@@ -43,9 +44,13 @@ ul {
 
 .game {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 .game-info {
-  margin-left: 20px;
+  margin-left: 0px;
+}
+
+.game-board {
+  margin-top: 20px;
 }

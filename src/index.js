@@ -45,8 +45,8 @@ class Game extends React.Component {
   }
 
   reset() {
-    this.setState((state) => ({
-      history: state.history.slice(0, 1)
+    this.setState(prevState => ({
+      history: prevState.history.slice(0, 1)
     }))
   }
 
@@ -78,8 +78,8 @@ class Game extends React.Component {
     }
 
     current[i] = this.getCurrentPlayerName()
-    this.setState((state) => ({ 
-      history: state.history.concat([{
+    this.setState(prevState => ({ 
+      history: prevState.history.concat([{
         squares: current,
         move: i,
       }])
@@ -88,8 +88,8 @@ class Game extends React.Component {
 
   undo() {
     if (this.state.history.length > 1) {
-      this.setState((state) => ({
-        history: state.history.slice(0, -1)
+      this.setState(prevState => ({
+        history: prevState.history.slice(0, -1)
       }))
     }
   }
@@ -108,17 +108,18 @@ class Game extends React.Component {
 
     return (
       <div className="game">
+        <h1>Tic-Tac-Toe</h1>
+        <div className="game-info">
+          <div>{status}</div>
+          <button onClick={() => this.undo()}>Undo</button>
+          <button onClick={() => this.reset()}>Reset</button>
+        </div>
         <div className="game-board">
           <Board 
             dimensions={this.props.dimensions}
             squares={current}
             onClick={(i) => this.handleClick(i)}
           />
-        </div>
-        <div className="game-info">
-          <div>{status}</div>
-          <button onClick={() => this.undo()}>Undo</button>
-          <button onClick={() => this.reset()}>Reset</button>
         </div>
       </div>
     )
