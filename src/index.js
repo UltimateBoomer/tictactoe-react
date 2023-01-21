@@ -1,13 +1,21 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
+import React, { useState } from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
 
 function Square(props) {
+  const [isHovering, setHovering] = useState(false);
+
   return (
-    <button className="square" onClick={props.onClick}>
-      {props.value}
+    <button
+      className={`square ${props.win ? "win" : ""} ${!props.value ? "hover" : ""}`}
+      onClick={props.onClick}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
+      {(!props.value && isHovering && !props.complete) ? props.currentPlayer : props.value}
+
     </button>
-  )
+  );
 }
 
 class Board extends React.Component {
@@ -16,45 +24,61 @@ class Board extends React.Component {
       <Square
         key={`square${i}`}
         value={this.props.squares[i]}
+        win={this.props.squareWins[i]}
+        currentPlayer={this.props.currentPlayer}
+        complete={this.props.complete}
         onClick={() => this.props.onClick(i)}
-      />)
+      />
+    );
   }
 
   render() {
-    const rows = []
-    for (let i = 0; i < this.props.dimensions[0]; i++) {
-      const row = []
-      for (let j = 0; j < this.props.dimensions[1]; j++) {
-        row.push(this.renderSquare(i * 3 + j));
+    // console.log(this.props);
+    const rows = [];
+    for (let i = 0; i < this.props.size; i++) {
+      const row = [];
+      for (let j = 0; j < this.props.size; j++) {
+        row.push(this.renderSquare(i * this.props.size + j));
       }
-      rows.push(<div key={`row${i}`} className='board-row'>{row}</div>)
+      rows.push(
+        <div key={`row${i}`} className="board-row">
+          {row}
+        </div>
+      );
     }
-    return <div>{rows}</div>
+    return <div>{rows}</div>;
   }
 }
 
 class Game extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      history: [{
-        squares: Array(this.props.dimensions.reduce((a, b) => a * b)),
-        move: null,
-      }]
-    }
+      history: [
+        {
+          squares: Array(this.props.size ** 2),
+          squareWins: Array(this.props.size ** 2),
+          move: null,
+        },
+      ],
+    };
   }
 
   reset() {
-    this.setState(prevState => ({
-      history: prevState.history.slice(0, 1)
-    }))
+    this.setState((prevState) => ({
+      history: prevState.history.slice(0, 1),
+    }));
   }
 
   getCurrentPlayerName() {
-    return this.state.history.length % 2 ? 'X' : 'O'
+    return this.state.history.length % 2 ? "X" : "O";
   }
 
-  getWins() {
+  countUsed(squares) {
+    return squares.reduce((p, c) => (c ? p + 1 : p), 0, squares);
+  }
+
+  getWins(squares) {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -64,46 +88,62 @@ class Game extends React.Component {
       [2, 5, 8],
       [0, 4, 8],
       [2, 4, 6],
-    ]
-    const current = this.state.history.at(-1).squares
-    return lines
-      .filter(l => current[l[0]] && l.slice(1).every(i => current[i] === current[l[0]]))
-      .map(l => [current[l[0]], l])
+    ];
+    return lines.filter(
+      (l) =>
+        squares[l[0]] && l.slice(1).every((i) => squares[i] === squares[l[0]])
+    );
+    // .map(l => [squares[l[0]], l]);
   }
 
   handleClick(i) {
-    const current = this.state.history.at(-1).squares.slice()
-    if (this.getWins().length || current[i]) {
-      return
+    const currentSquares = this.state.history.at(-1).squares;
+    if (this.getWins(currentSquares).length || currentSquares[i]) {
+      return;
     }
 
-    current[i] = this.getCurrentPlayerName()
-    this.setState(prevState => ({ 
-      history: prevState.history.concat([{
-        squares: current,
-        move: i,
-      }])
-    }))
+    let newSquares = currentSquares.slice();
+    newSquares[i] = this.getCurrentPlayerName();
+    const newWins = this.getWins(newSquares);
+    // console.log(newWins);
+    let squareWins = Array(this.props.size ** 2);
+    newWins.forEach((w) => w.forEach((j) => (squareWins[j] = true)));
+    // console.log(squareWins);
+
+    this.setState((prevState) => ({
+      history: prevState.history.concat([
+        {
+          squares: newSquares,
+          squareWins: squareWins,
+          move: i,
+        },
+      ]),
+    }));
   }
 
   undo() {
     if (this.state.history.length > 1) {
-      this.setState(prevState => ({
-        history: prevState.history.slice(0, -1)
-      }))
+      this.setState((prevState) => ({
+        history: prevState.history.slice(0, -1),
+      }));
     }
   }
 
   render() {
-    const history = this.state.history
-    const current = history.at(-1).squares
-    const wins = this.getWins()
+    const history = this.state.history;
+    const current = history.at(-1);
+    const wins = this.getWins(current.squares);
+    // const used = this.countUsed(current);
 
-    let status
+    // console.log("current: ", current);
+
+    let status;
     if (wins.length) {
-      status = `${wins[0][0]} wins!`
+      status = `${current.squares[wins[0][0]]} wins!`;
+    } else if (history.length === 9) {
+      status = "Draw";
     } else {
-      status = `${this.getCurrentPlayerName()}'s turn`
+      status = `${this.getCurrentPlayerName()}'s turn`;
     }
 
     return (
@@ -115,18 +155,21 @@ class Game extends React.Component {
           <button onClick={() => this.reset()}>Reset</button>
         </div>
         <div className="game-board">
-          <Board 
-            dimensions={this.props.dimensions}
-            squares={current}
+          <Board
+            size={this.props.size}
+            squares={current.squares}
+            squareWins={current.squareWins}
+            currentPlayer={this.getCurrentPlayerName()}
+            complete={wins.length > 0}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
       </div>
-    )
+    );
   }
 }
 
 // ========================================
 
-const root = ReactDOM.createRoot(document.getElementById("root"))
-root.render(<Game dimensions={[3, 3]}/>)
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Game size={3} />);
