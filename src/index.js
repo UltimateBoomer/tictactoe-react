@@ -80,15 +80,13 @@ class Game extends React.Component {
 
   getWins(squares) {
     const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
+      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i * 3 + j)),
+      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i + j * 3)),
+      [Array(this.props.size).fill(0).map((_, i) => i * (this.props.size + 1))],
+      [Array(this.props.size).fill(0).map((_, i) => this.props.size - 1 + i * (this.props.size - 1))],
+    ].flat();
+    console.log(lines);
+
     return lines.filter(
       (l) =>
         squares[l[0]] && l.slice(1).every((i) => squares[i] === squares[l[0]])
