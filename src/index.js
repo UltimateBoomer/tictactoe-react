@@ -85,7 +85,7 @@ class Game extends React.Component {
       [Array(this.props.size).fill(0).map((_, i) => i * (this.props.size + 1))],
       [Array(this.props.size).fill(0).map((_, i) => this.props.size - 1 + i * (this.props.size - 1))],
     ].flat();
-    console.log(lines);
+    // console.log(lines);
 
     return lines.filter(
       (l) =>
