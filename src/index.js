@@ -107,8 +107,8 @@ class Game extends React.Component {
   getWins(squares) {
     // Generate possible winning lines based on size of board.
     const lines = [
-      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i * 3 + j)),
-      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i + j * 3)),
+      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i * this.props.size + j)),
+      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i + j * this.props.size)),
       [Array(this.props.size).fill(0).map((_, i) => i * (this.props.size + 1))],
       [Array(this.props.size).fill(0).map((_, i) => this.props.size - 1 + i * (this.props.size - 1))],
     ].flat();
@@ -162,7 +162,7 @@ class Game extends React.Component {
     let status;
     if (wins.length) {
       status = `${current.squares[wins[0][0]]} wins!`;
-    } else if (history.length === 9) {
+    } else if (history.length === this.props.size ** 2) {
       status = "Draw";
     } else {
       status = `${this.getCurrentPlayerName()}'s turn`;
