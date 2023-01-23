@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
+/**
+ * Renders squares on TTT board, given game state information.
+ */
 function Square(props) {
   const [isHovering, setHovering] = useState(false);
 
@@ -18,6 +21,9 @@ function Square(props) {
   );
 }
 
+/**
+ * Renders TTT board given game state information.
+ */
 class Board extends React.Component {
   renderSquare(i) {
     return (
@@ -33,7 +39,6 @@ class Board extends React.Component {
   }
 
   render() {
-    // console.log(this.props);
     const rows = [];
     for (let i = 0; i < this.props.size; i++) {
       const row = [];
@@ -50,6 +55,9 @@ class Board extends React.Component {
   }
 }
 
+/**
+ * Handles TTT logic and renders the entire page.
+ */
 class Game extends React.Component {
   constructor(props) {
     super(props);
@@ -64,34 +72,51 @@ class Game extends React.Component {
     };
   }
 
+  /**
+   * Reset game to starting position.
+   * Done by resetting history to original state.
+   */
   reset() {
     this.setState((prevState) => ({
       history: prevState.history.slice(0, 1),
     }));
   }
 
+  /**
+   * Get the current player name based on turn count.
+   * @returns string
+   */
   getCurrentPlayerName() {
     return this.state.history.length % 2 ? "X" : "O";
   }
 
+  /**
+   * Get the number of occupied squares on the board.
+   * @param {[]} squares 
+   * @returns int
+   */
   countUsed(squares) {
     return squares.reduce((p, c) => (c ? p + 1 : p), 0, squares);
   }
 
+  /**
+   * Produce a list of winning lines.
+   * @param {[]} squares 
+   * @returns 
+   */
   getWins(squares) {
+    // Generate possible winning lines based on size of board.
     const lines = [
       Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i * 3 + j)),
       Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i + j * 3)),
       [Array(this.props.size).fill(0).map((_, i) => i * (this.props.size + 1))],
       [Array(this.props.size).fill(0).map((_, i) => this.props.size - 1 + i * (this.props.size - 1))],
     ].flat();
-    // console.log(lines);
 
     return lines.filter(
       (l) =>
         squares[l[0]] && l.slice(1).every((i) => squares[i] === squares[l[0]])
     );
-    // .map(l => [squares[l[0]], l]);
   }
 
   handleClick(i) {
@@ -103,7 +128,6 @@ class Game extends React.Component {
     let newSquares = currentSquares.slice();
     newSquares[i] = this.getCurrentPlayerName();
     const newWins = this.getWins(newSquares);
-    // console.log(newWins);
     let squareWins = Array(this.props.size ** 2);
     newWins.forEach((w) => w.forEach((j) => (squareWins[j] = true)));
     // console.log(squareWins);
