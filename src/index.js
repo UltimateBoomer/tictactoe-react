@@ -10,9 +10,7 @@ function Square(props) {
 
   return (
     <button
-      className={`square ${props.win ? "win" : ""} ${
-        !props.value ? "hover" : ""
-      }`}
+      className={`square ${props.win ? "win" : ""} ${!props.value ? "hover" : ""} ${props.type ? "a" : "b"}`}
       onClick={props.onClick}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
@@ -28,7 +26,7 @@ function Square(props) {
  * Renders TTT board given game state information.
  */
 class Board extends React.Component {
-  renderSquare(i) {
+  renderSquare(i, type) {
     return (
       <Square
         key={`square${i}`}
@@ -36,6 +34,7 @@ class Board extends React.Component {
         win={this.props.squareWins[i]}
         currentPlayer={this.props.currentPlayer}
         complete={this.props.complete}
+        type={type}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -43,10 +42,12 @@ class Board extends React.Component {
 
   render() {
     const rows = [];
+    let type = false;
     for (let i = 0; i < this.props.size; i++) {
       const row = [];
       for (let j = 0; j < this.props.size; j++) {
-        row.push(this.renderSquare(i * this.props.size + j));
+        row.push(this.renderSquare(i * this.props.size + j, type));
+        type ^= true;
       }
       rows.push(
         <div key={`row${i}`} className="board-row">
