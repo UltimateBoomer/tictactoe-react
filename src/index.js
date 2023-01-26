@@ -10,13 +10,16 @@ function Square(props) {
 
   return (
     <button
-      className={`square ${props.win ? "win" : ""} ${!props.value ? "hover" : ""}`}
+      className={`square ${props.win ? "win" : ""} ${
+        !props.value ? "hover" : ""
+      }`}
       onClick={props.onClick}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
-      {(!props.value && isHovering && !props.complete) ? props.currentPlayer : props.value}
-
+      {!props.value && isHovering && !props.complete
+        ? props.currentPlayer
+        : props.value}
     </button>
   );
 }
@@ -92,7 +95,7 @@ class Game extends React.Component {
 
   /**
    * Get the number of occupied squares on the board.
-   * @param {[]} squares 
+   * @param {[]} squares
    * @returns int
    */
   countUsed(squares) {
@@ -101,16 +104,36 @@ class Game extends React.Component {
 
   /**
    * Produce a list of winning lines.
-   * @param {[]} squares 
-   * @returns 
+   * @param {[]} squares
+   * @returns
    */
   getWins(squares) {
     // Generate possible winning lines based on size of board.
     const lines = [
-      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i * this.props.size + j)),
-      Array(this.props.size).fill(0).map((_, i) => Array(this.props.size).fill(0).map((_, j) => i + j * this.props.size)),
-      [Array(this.props.size).fill(0).map((_, i) => i * (this.props.size + 1))],
-      [Array(this.props.size).fill(0).map((_, i) => this.props.size - 1 + i * (this.props.size - 1))],
+      Array(this.props.size)
+        .fill(0)
+        .map((_, i) =>
+          Array(this.props.size)
+            .fill(0)
+            .map((_, j) => i * this.props.size + j)
+        ),
+      Array(this.props.size)
+        .fill(0)
+        .map((_, i) =>
+          Array(this.props.size)
+            .fill(0)
+            .map((_, j) => i + j * this.props.size)
+        ),
+      [
+        Array(this.props.size)
+          .fill(0)
+          .map((_, i) => i * (this.props.size + 1)),
+      ],
+      [
+        Array(this.props.size)
+          .fill(0)
+          .map((_, i) => this.props.size - 1 + i * (this.props.size - 1)),
+      ],
     ].flat();
 
     return lines.filter(
@@ -172,9 +195,11 @@ class Game extends React.Component {
       <div className="game">
         <h1>Tic-Tac-Toe</h1>
         <div className="game-info">
-          <div>{status}</div>
-          <button onClick={() => this.undo()}>Undo</button>
-          <button onClick={() => this.reset()}>Reset</button>
+          <p>{status}</p>
+          <div>
+            <button className="game-button" onClick={() => this.undo()}>Undo</button>
+            <button className="game-button" onClick={() => this.reset()}>Reset</button>
+          </div>
         </div>
         <div className="game-board">
           <Board

@@ -28,8 +28,7 @@ ul {
   height: 1.5em;
   width: 1.5em;
   /* size: 64px 64px; */
-  margin-right: -1px;
-  margin-top: -1px;
+  margin: -0.5px;
   padding: 0;
   text-align: center;
 }
@@ -58,9 +57,18 @@ ul {
 }
 
 .game-info {
-  margin-left: 0px;
+  margin: 0px;
+  font-size: 20px;
+  text-align: center;
+  display: center;
 }
 
 .game-board {
   margin-top: 20px;
+}
+
+.game-button {
+  border: none;
+  font-size: 20px;
+  margin: 3px;
 }
