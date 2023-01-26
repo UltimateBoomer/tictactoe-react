@@ -185,7 +185,7 @@ class Game extends React.Component {
     let status;
     if (wins.length) {
       status = `${current.squares[wins[0][0]]} wins!`;
-    } else if (history.length === this.props.size ** 2) {
+    } else if (history.length > this.props.size ** 2) {
       status = "Draw";
     } else {
       status = `${this.getCurrentPlayerName()}'s turn`;
